@@ -18,7 +18,7 @@ public class VideoService {
 	private VideoRepository _videorepo;
 	
 	
-	public ResponseEntity<VideoModel> alterandoVideo(long videoId, VideoModel novoVideo) {
+	public ResponseEntity<VideoModel> updating(long videoId, VideoModel novoVideo) {
 		Optional<VideoModel> antigoVideo = _videorepo.findById(videoId);
 		if(antigoVideo.isPresent()) {
 			VideoModel video = antigoVideo.get();
@@ -33,7 +33,7 @@ public class VideoService {
 	}
 
 	
-	public ResponseEntity<VideoModel> apagandoVideo(long videoId) {
+	public ResponseEntity<VideoModel> deleting(long videoId) {
 		Optional<VideoModel> video = _videorepo.findById(videoId);
 		if(video.isPresent()) {
 			_videorepo.delete(video.get());

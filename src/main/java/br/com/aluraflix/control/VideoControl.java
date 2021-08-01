@@ -36,14 +36,14 @@ public class VideoControl {
 	
 	@ApiOperation(value = "Visualizar todos os videos!")
 	@GetMapping(value = "/videos")
-	public List<VideoModel> verTodosVideos() {
+	public List<VideoModel> readAll() {
 		return _videorepo.findAll();
 	}
 	
 	
 	@ApiOperation(value = "Vizualizar um video pelo ID!")
 	@GetMapping(value = "/videos/{videoId}")
-	public ResponseEntity<VideoModel> verVideoPeloId(@PathVariable(value = "videoId") long videoId) {
+	public ResponseEntity<VideoModel> readOneById(@PathVariable(value = "videoId") long videoId) {
 		Optional<VideoModel> video = _videorepo.findById(videoId);
 		if(video.isPresent())
 			return new ResponseEntity<VideoModel>(video.get(), HttpStatus.OK);
@@ -52,9 +52,9 @@ public class VideoControl {
 	}
 	
 
-	@ApiOperation(value = "Criar um video pelo dados enviados!")
+	@ApiOperation(value = "Criar um video pelo JSON!")
 	@PostMapping(value = "/videos")
-	public ResponseEntity<?> criarVideo(@Validated @RequestBody VideoModel video){
+	public ResponseEntity<?> createOneWithBody(@Validated @RequestBody VideoModel video){
 		try {
 			return new ResponseEntity<VideoModel>(_videorepo.save(video), HttpStatus.CREATED);
 		} catch(Exception e) {
@@ -63,17 +63,17 @@ public class VideoControl {
 	} 
 	
 
-	@ApiOperation(value = "Alterar um video pelo ID!")
+	@ApiOperation(value = "Alterar um video pelo ID, com o JSON!")
 	@PutMapping(value = "/videos/{videoId}")
-	public ResponseEntity<VideoModel> alterarVideoPeloId(@PathVariable(value = "videoId") long videoId, @Validated @RequestBody VideoModel novoVideo) {
-		return _videoserv.alterandoVideo(videoId, novoVideo);
+	public ResponseEntity<VideoModel> updateOneById(@PathVariable(value = "videoId") long videoId, @Validated @RequestBody VideoModel novoVideo) {
+		return _videoserv.updating(videoId, novoVideo);
 	}
 	
 	
 	@ApiOperation(value = "Apagar um video pelo ID!")
 	@DeleteMapping(value = "/videos/{videoId}")
-	public ResponseEntity<VideoModel> apagarVideoPeloId(@PathVariable(value = "videoId") long videoId) {
-		return _videoserv.apagandoVideo(videoId);
+	public ResponseEntity<VideoModel> deleteOneById(@PathVariable(value = "videoId") long videoId) {
+		return _videoserv.deleting(videoId);
 	}
 	
 
