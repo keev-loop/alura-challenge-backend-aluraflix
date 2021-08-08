@@ -36,14 +36,14 @@ public class VideoControl {
 	
 	@ApiOperation(value = "Visualizar todos os videos!")
 	@GetMapping(value = "/videos")
-	public List<VideoModel> readAll() {
+	public List<VideoModel> getAll() {
 		return _videorepo.findAll();
 	}
 	
 	
 	@ApiOperation(value = "Vizualizar um video pelo ID!")
 	@GetMapping(value = "/videos/{videoId}")
-	public ResponseEntity<VideoModel> readOneById(@PathVariable(value = "videoId") long videoId) {
+	public ResponseEntity<VideoModel> getOneById(@PathVariable(value = "videoId") long videoId) {
 		Optional<VideoModel> video = _videorepo.findById(videoId);
 		if(video.isPresent())
 			return new ResponseEntity<VideoModel>(video.get(), HttpStatus.OK);
@@ -54,7 +54,7 @@ public class VideoControl {
 
 	@ApiOperation(value = "Criar um video pelo JSON!")
 	@PostMapping(value = "/videos")
-	public ResponseEntity<?> createOneWithBody(@Validated @RequestBody VideoModel video){
+	public ResponseEntity<?> postOneWithBody(@Validated @RequestBody VideoModel video){
 		try {
 			return new ResponseEntity<VideoModel>(_videorepo.save(video), HttpStatus.CREATED);
 		} catch(Exception e) {
@@ -65,7 +65,7 @@ public class VideoControl {
 
 	@ApiOperation(value = "Alterar um video pelo ID, com o JSON!")
 	@PutMapping(value = "/videos/{videoId}")
-	public ResponseEntity<VideoModel> updateOneById(@PathVariable(value = "videoId") long videoId, @Validated @RequestBody VideoModel novoVideo) {
+	public ResponseEntity<VideoModel> putOneById(@PathVariable(value = "videoId") long videoId, @Validated @RequestBody VideoModel novoVideo) {
 		return _videoserv.updating(videoId, novoVideo);
 	}
 	
@@ -76,5 +76,16 @@ public class VideoControl {
 		return _videoserv.deleting(videoId);
 	}
 	
-
+	
+	@ApiOperation(value = "Visualizar um video pelo Titulo!")
+	@GetMapping(value = "/videos/?titulo={videoTitulo}")
+	public ResponseEntity<?> getVideoByTitulo(@PathVariable(value = "videoTitulo") String videoTitulo) {
+		Optional<VideoModel> video = _videorepo.findByVideoTitulo(videoTitulo);
+		if(video.isPresent()) {
+			return new ResponseEntity<VideoModel>(video.get(), HttpStatus.OK);
+		}
+		else
+			return new ResponseEntity<>("Video não encontrado!", HttpStatus.NOT_FOUND);
+	}
+	
 }

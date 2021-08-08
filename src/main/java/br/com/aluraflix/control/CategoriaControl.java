@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.aluraflix.model.CategoriaModel;
+import br.com.aluraflix.model.VideoModel;
 import br.com.aluraflix.repository.CategoriaRepository;
+import br.com.aluraflix.repository.VideoRepository;
 import br.com.aluraflix.service.CategoriaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,30 +34,32 @@ public class CategoriaControl {
 	private CategoriaRepository _categoriarepo;
 	@Autowired
 	private CategoriaService _categoriaserv;
+	@Autowired
+	private VideoRepository _videorepo;
 	
 	
 	@ApiOperation(value = "Visualizar todas as categorias!")
 	@GetMapping(value = "/categorias")
-	public List<CategoriaModel> readAll() {
+	public List<CategoriaModel> getAll() {
 		return _categoriarepo.findAll();
 	}
 
 	
 	@ApiOperation(value = "Vizualizar uma categoria pelo ID!")
 	@GetMapping(value = "/categorias/{categoriaId}")
-	public ResponseEntity<CategoriaModel> readOneById(@PathVariable(value="categoriaId") long categoriaId) {
+	public ResponseEntity<?> getOneById(@PathVariable(value="categoriaId") long categoriaId) {
 		Optional<CategoriaModel> categoria = _categoriarepo.findById(categoriaId);		
 		if(categoria.isPresent()) {
 			return new ResponseEntity<CategoriaModel>(categoria.get(), HttpStatus.OK);
 		}
 		else
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>("Categoria não encontrada!", HttpStatus.NOT_FOUND);
 	}
 	
 	
 	@ApiOperation(value = "Criar uma categoria com o JSON!")
 	@PostMapping(value = "/categorias")
-	public ResponseEntity<?> createOneWithBody(@Validated @RequestBody CategoriaModel categoria) {
+	public ResponseEntity<?> postOneWithBody(@Validated @RequestBody CategoriaModel categoria) {
 		try {
 			return new ResponseEntity<CategoriaModel>(_categoriarepo.save(categoria), HttpStatus.CREATED);
 		} catch(Exception e) {
@@ -66,7 +70,7 @@ public class CategoriaControl {
 	
 	@ApiOperation(value = "Atualizar uma categoria pelo ID, com o JSON!")
 	@PutMapping(value = "/categorias/{categoriaId}")
-	public ResponseEntity<CategoriaModel> updateOneById(@PathVariable(value="categoriaId") long categoriaId, @Validated @RequestBody CategoriaModel novaCategoria) {
+	public ResponseEntity<CategoriaModel> putOneById(@PathVariable(value="categoriaId") long categoriaId, @Validated @RequestBody CategoriaModel novaCategoria) {
 		return _categoriaserv.updating(categoriaId, novaCategoria);
 	}
 	
@@ -77,5 +81,17 @@ public class CategoriaControl {
 		return _categoriaserv.deleting(categoriaId);
 	}
 	
-		
+
+	@ApiOperation(value = "Visualizar todos os videos pela categoriaID!")
+	@GetMapping(value = "/categorias/{categoriaId}/videos")
+	public ResponseEntity<?> getVideoFromCategoria(@PathVariable(value="categoriaId") long categoriaId) {
+		Optional<CategoriaModel> categoria = _categoriarepo.findById(categoriaId);
+		if(categoria.isPresent()) {
+			List<VideoModel> videos = _videorepo.findByCategoriaId(categoria.get());
+			return new ResponseEntity<>(videos, HttpStatus.OK);
+		}
+		else
+			return new ResponseEntity<>("Categoria não encontrada!", HttpStatus.NOT_FOUND);
+	}
+	
 }

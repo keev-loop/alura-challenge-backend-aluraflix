@@ -1,10 +1,13 @@
 package br.com.aluraflix.model;
 
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -32,6 +35,10 @@ public class VideoModel {
 	
 	@Column(nullable = false, name = "video_url")
 	private String videoUrl;
+	
+	@ManyToOne
+	@JoinColumn(name = "categoriaId", columnDefinition="bigint(20) default 1")
+	private CategoriaModel categoriaId;
 	
 	
 }
