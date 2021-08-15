@@ -1,8 +1,10 @@
 package br.com.aluraflix.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,13 @@ public class VideoService {
 		else
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
+	
+	
+	public List<VideoModel> pagination(int page) {
+        int size = 5;
+        PageRequest pageRequest = PageRequest.of(page,size);
+        return _videorepo.findAll(pageRequest).getContent();
+    }
 	
 	
 }

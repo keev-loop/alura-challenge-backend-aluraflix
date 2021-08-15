@@ -1,6 +1,7 @@
 package br.com.aluraflix.control;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.aluraflix.model.CategoriaModel;
@@ -60,11 +62,7 @@ public class CategoriaControl {
 	@ApiOperation(value = "Criar uma categoria com o JSON!")
 	@PostMapping(value = "/categorias")
 	public ResponseEntity<?> postOneWithBody(@Validated @RequestBody CategoriaModel categoria) {
-		try {
-			return new ResponseEntity<CategoriaModel>(_categoriarepo.save(categoria), HttpStatus.CREATED);
-		} catch(Exception e) {
-			return new ResponseEntity<>(e, HttpStatus.NOT_ACCEPTABLE);
-		}	
+		return _categoriaserv.creating(categoria);
 	}
 	
 	
@@ -92,6 +90,20 @@ public class CategoriaControl {
 		}
 		else
 			return new ResponseEntity<>("Categoria não encontrada!", HttpStatus.NOT_FOUND);
+	}
+	
+	
+	@ApiOperation(value = "Visualizar categorias por Query Parameters!")
+	@GetMapping(value = "/categorias/")
+	public List<CategoriaModel> getCategoriaPageable(@RequestParam Map<String,String> allParams) {
+		if(allParams.containsKey("titulo")) {
+			return _categoriarepo.findByCategoriaTituloEquals(allParams.get("titulo"));
+		}
+		if(allParams.containsKey("pagina")) {
+			return _categoriaserv.pagination(Integer.parseInt(allParams.get("pagina")));
+		}
+		else
+			return _categoriarepo.findAll();
 	}
 	
 }

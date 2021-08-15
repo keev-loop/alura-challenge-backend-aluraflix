@@ -1,6 +1,7 @@
 package br.com.aluraflix.control;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.aluraflix.model.VideoModel;
@@ -22,6 +24,7 @@ import br.com.aluraflix.repository.VideoRepository;
 import br.com.aluraflix.service.VideoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 
 @RestController
 @RequestMapping("/api/v1")
@@ -76,16 +79,18 @@ public class VideoControl {
 		return _videoserv.deleting(videoId);
 	}
 	
-	
-	@ApiOperation(value = "Visualizar um video pelo Titulo!")
-	@GetMapping(value = "/videos/?titulo={videoTitulo}")
-	public ResponseEntity<?> getVideoByTitulo(@PathVariable(value = "videoTitulo") String videoTitulo) {
-		Optional<VideoModel> video = _videorepo.findByVideoTitulo(videoTitulo);
-		if(video.isPresent()) {
-			return new ResponseEntity<VideoModel>(video.get(), HttpStatus.OK);
+		
+	@ApiOperation(value = "Visualizar videos por Query Parameters!")
+	@GetMapping(value = "/videos/")
+	public List<VideoModel> getVideosPageable(@RequestParam Map<String,String> allParams) {
+		if(allParams.containsKey("titulo")) {
+		 	return _videorepo.findByVideoTituloEquals(allParams.get("titulo"));		
+		}
+		if(allParams.containsKey("pagina")) {
+			return _videoserv.pagination(Integer.parseInt(allParams.get("pagina")));
 		}
 		else
-			return new ResponseEntity<>("Video não encontrado!", HttpStatus.NOT_FOUND);
+			return _videorepo.findAll();
 	}
 	
 }
